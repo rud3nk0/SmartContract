@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // наследуемся сразу от двух контрактов — ERC20 (вся логика токена)
 // и Ownable (концепция владельца, которую мы раньше писали руками через modifier)
 contract MyToken is ERC20, Ownable {
-//aaaaa
     // максимальный supply — сколько токенов вообще может существовать
     uint256 public constant MAX_SUPPLY = 1_000_000 * 10 ** 18;
     // умножаем на 10**18, потому что у ERC-20 обычно 18 decimals (как wei у ETH)

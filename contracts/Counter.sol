@@ -16,4 +16,9 @@ contract Counter {
     x += by;
     emit Increment(by);
   }
+
+  function double() public {
+    x*=2;
+  }
+
 }
