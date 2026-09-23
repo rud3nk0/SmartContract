@@ -22,14 +22,18 @@ npx hardhat test
 
 ### `Counter.sol`
 
-A basic tutorial contract for practicing Solidity fundamentals: state variables, events, custom errors, and access modifiers.
+A basic tutorial contract for practicing Solidity fundamentals: state variables, events, custom errors, access modifiers, and internal helper functions.
 
 **Functions:**
-- `increment()` / `decrement()` — increments or decrements the counter; accessible to everyone
-- `reset()` — resets the counter to 0; accessible only to the contract owner (`onlyOwner` modifier)
-- `getCount()` — reads the current value (`view`, free call)
+- `inc()` / `incBy(uint by)` — increments the counter by 1 or by a custom amount; accessible to everyone
+- `double()` — multiplies the current counter value by 2
+- `isEven()` — returns `true`/`false` depending on whether the current value is even (`view`, free call)
+- `max` / `min` (public state variables) — automatically track the highest and lowest values the counter has ever reached, updated internally after every state-changing call via a shared `_updateMinMax()` helper
 
-**Shows:** the difference between a transaction (writes to the blockchain, costs gas) and a read call (`view`, free); the access control pattern using `modifier` and `custom error`.
+**Shows:** the difference between a transaction (writes to the blockchain, costs gas) and a read call (`view`, free); modular arithmetic (`%`) for parity checks; the DRY principle in Solidity — extracting repeated logic into an `internal` helper function reused across multiple state-changing functions; using `type(uint256).max` to safely initialize a "running minimum" tracker in the constructor.
+
+---
+
 ### `MyToken.sol`
 
 An ERC-20 token based on [OpenZeppelin](https://www.openzeppelin.com/contracts), with a cap on the maximum supply.
@@ -38,7 +42,7 @@ An ERC-20 token based on [OpenZeppelin](https://www.openzeppelin.com/contracts),
 
 **Functions:**
 - `mint(address to, uint256 amount)` — mints new tokens; only the owner can do this; cannot exceed `MAX_SUPPLY`
-- `burn(uint256 amount)` — burns the owner’s own tokens; available to any holder
+- `burn(uint256 amount)` — burns the caller's own tokens; available to any holder
 - Inherits the entire standard ERC-20 interface: `transfer`, `approve`, `transferFrom`, `balanceOf`, etc.
 
 **Highlights:** inheritance from audit-verified libraries instead of writing the standard from scratch; the `Ownable` pattern; issuance limits on top of the standard ERC-20.
@@ -57,12 +61,13 @@ A vesting contract for `MyToken` tokens for a single beneficiary, with a cliff p
 **Demonstrates:** working with `block.timestamp` for time-based logic; linear vesting calculations; a typical pattern used in the tokenomics of real-world projects (the team and investors receive tokens gradually rather than all at once).
 
 ---
+
 ## Tests
 
-The tests are located in `test/` and are written using `node:test` + `viem` (Hardhat 3’s built-in test runner). Each contract is covered by tests that check:
+The tests are located in `test/` and are written using `node:test` + `viem` (Hardhat 3's built-in test runner). Each contract is covered by tests that check:
 - the correctness of the initial state after deployment
 - access permissions (what happens if a function is called by someone other than the owner)
-- edge cases (exceeding limits, attempting to withdraw before the time limit expires, etc.)
+- edge cases (exceeding limits, attempting to withdraw before the time limit expires, running totals like `max`/`min` staying consistent across multiple calls, etc.)
 
 ```bash
 npx hardhat test

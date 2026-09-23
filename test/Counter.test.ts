@@ -27,6 +27,28 @@ describe("Counter", async function () {
       assert.equal(await counter.read.x(), 2n);
    });
 
+   it("Function isEven()", async function () {
+      const counter = await viem.deployContract("Counter");
+
+      await counter.write.inc();
+      assert.equal(await counter.read.isEven(), false);
+
+      await counter.write.inc();
+      assert.equal(await counter.read.isEven(), true);
+   });
+
+   it("Check Max/Min", async function () {
+      const counter = await viem.deployContract("Counter");
+
+      await counter.write.inc();
+      assert.equal(await counter.read.max(), 1n);
+      assert.equal(await counter.read.min(), 1n);
+
+      await counter.write.incBy([5n]);
+      assert.equal(await counter.read.max(), 6n);
+      assert.equal(await counter.read.min(), 1n);
+   });
+
    it("The sum of the Increment events should match the current value", async function () {
       const counter = await viem.deployContract("Counter");
       const deploymentBlockNumber = await publicClient.getBlockNumber();
